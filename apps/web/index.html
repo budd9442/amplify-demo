@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monorepo Workspace Dashboard | Web & API</title>
+    <meta
+      name="description"
+      content="A modern, unified monorepo demonstration featuring Vite frontend, Express backend, and shared TypeScript/JavaScript utilities."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body class="dark-theme">
+    <div id="app" class="dashboard-layout">
+      <!-- Top Navigation -->
+      <header class="navbar" id="main-header">
+        <div class="nav-brand">
+          <div class="brand-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">PolyStack</span>
+            <span class="brand-badge">npm workspaces</span>
+          </div>
+        </div>
+
+        <!-- Live Server Status Indicator -->
+        <div class="server-status-pill" id="server-status-pill" title="Checking backend health...">
+          <span class="status-dot ping-animation" id="status-dot"></span>
+          <span class="status-label" id="status-label">Connecting to API...</span>
+          <span class="status-latency" id="status-latency">-- ms</span>
+        </div>
+
+        <div class="nav-actions">
+          <button id="architecture-btn" class="nav-btn ghost-btn" title="View Monorepo Architecture">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Architecture</span>
+          </button>
+
+          <button id="theme-toggle-btn" class="nav-btn icon-only" title="Toggle Theme" aria-label="Toggle Theme">
+            <svg id="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg id="theme-icon-light" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Container -->
+      <main class="main-content" id="main-content">
+        <!-- Hero Banner -->
+        <section class="hero-section" id="hero-section">
+          <div class="hero-content">
+            <div class="hero-tag">
+              <span class="tag-sparkle">✦</span>
+              <span>Full-Stack Monorepo Template</span>
+            </div>
+            <h1 class="hero-heading">Unified Frontend & Backend Architecture</h1>
+            <p class="hero-subtext">
+              Built with seamless package sharing across
+              <code class="code-chip">apps/web</code>,
+              <code class="code-chip">apps/api</code>, and
+              <code class="code-chip">packages/shared</code>.
+            </p>
+          </div>
+
+          <!-- Monorepo Packages Badges -->
+          <div class="workspace-chips" id="workspace-chips">
+            <!-- Dynamically populated from shared config -->
+          </div>
+        </section>
+
+        <!-- KPI Metrics Grid -->
+        <section class="metrics-grid" id="metrics-grid">
+          <div class="metric-card" id="metric-total-card">
+            <div class="metric-header">
+              <span class="metric-title">Total Tasks</span>
+              <span class="metric-icon total-icon">📂</span>
+            </div>
+            <div class="metric-value" id="metric-total">--</div>
+            <div class="metric-footer">Synced with <code class="mono-text">@monorepo/api</code></div>
+          </div>
+
+          <div class="metric-card" id="metric-progress-card">
+            <div class="metric-header">
+              <span class="metric-title">In Progress</span>
+              <span class="metric-icon progress-icon">⚡</span>
+            </div>
+            <div class="metric-value" id="metric-inprogress">--</div>
+            <div class="metric-footer">Active initiatives</div>
+          </div>
+
+          <div class="metric-card" id="metric-completed-card">
+            <div class="metric-header">
+              <span class="metric-title">Completed</span>
+              <span class="metric-icon completed-icon">✓</span>
+            </div>
+            <div class="metric-value" id="metric-completed">--</div>
+            <div class="metric-footer" id="metric-rate">0% completion rate</div>
+          </div>
+
+          <div class="metric-card" id="metric-latency-card">
+            <div class="metric-header">
+              <span class="metric-title">Backend Uptime</span>
+              <span class="metric-icon uptime-icon">⏱</span>
+            </div>
+            <div class="metric-value" id="metric-uptime">--</div>
+            <div class="metric-footer" id="metric-node-version">Node.js Express</div>
+          </div>
+        </section>
+
+        <!-- Tasks and Workspace Interaction -->
+        <section class="workspace-section" id="workspace-section">
+          <!-- Control bar -->
+          <div class="section-toolbar">
+            <div class="toolbar-title-group">
+              <h2 class="section-title">Workspace Tasks</h2>
+              <span class="task-count-pill" id="task-count-pill">0 items</span>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-group" id="filter-group">
+              <button class="filter-btn active" data-filter="all" id="filter-all">All</button>
+              <button class="filter-btn" data-filter="pending" id="filter-pending">Pending</button>
+              <button class="filter-btn" data-filter="in_progress" id="filter-inprogress">In Progress</button>
+              <button class="filter-btn" data-filter="completed" id="filter-completed">Completed</button>
+            </div>
+
+            <div class="toolbar-actions">
+              <button class="btn secondary-btn" id="reset-data-btn" title="Reset sample tasks">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+                <span>Reset Demo</span>
+              </button>
+              <button class="btn primary-btn" id="open-add-modal-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>New Item</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Items List Container -->
+          <div class="items-list-container" id="items-list-container">
+            <div class="loading-state" id="loading-state">
+              <div class="spinner"></div>
+              <p>Fetching data from Express backend...</p>
+            </div>
+            <div class="items-grid" id="items-grid"></div>
+            <div class="empty-state hidden" id="empty-state">
+              <div class="empty-icon">📦</div>
+              <h3>No tasks found in this view</h3>
+              <p>Create a new task above or reset the workspace demo data.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Add Task Modal -->
+      <div class="modal-backdrop hidden" id="add-modal">
+        <div class="modal-card" id="add-modal-card">
+          <div class="modal-header">
+            <div class="modal-title-wrap">
+              <h3 class="modal-title">Create Workspace Item</h3>
+              <p class="modal-subtitle">Validated via <code class="mono-text">@monorepo/shared</code> contracts</p>
+            </div>
+            <button class="close-btn" id="close-modal-btn" aria-label="Close modal">&times;</button>
+          </div>
+
+          <form id="create-item-form" class="modal-form">
+            <div class="form-group">
+              <label for="task-title-input">Task Title *</label>
+              <input
+                type="text"
+                id="task-title-input"
+                name="title"
+                placeholder="e.g. Implement GraphQL schema generator"
+                required
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="task-category-select">Category</label>
+                <select id="task-category-select" name="category">
+                  <!-- Injected from shared -->
+                </select>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="task-priority-select">Priority</label>
+                <select id="task-priority-select" name="priority">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-errors hidden" id="form-errors"></div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn ghost-btn" id="cancel-modal-btn">Cancel</button>
+              <button type="submit" class="btn primary-btn" id="submit-item-btn">Create Item</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Architecture Modal -->
+      <div class="modal-backdrop hidden" id="arch-modal">
+        <div class="modal-card wide-card" id="arch-modal-card">
+          <div class="modal-header">
+            <div class="modal-title-wrap">
+              <h3 class="modal-title">Monorepo Structure & Flow</h3>
+              <p class="modal-subtitle">How apps and packages communicate in this setup</p>
+            </div>
+            <button class="close-btn" id="close-arch-btn" aria-label="Close modal">&times;</button>
+          </div>
+
+          <div class="arch-content">
+            <div class="arch-grid">
+              <div class="arch-box">
+                <div class="arch-box-badge web-badge">apps/web</div>
+                <h4>Frontend (Port 3000)</h4>
+                <p>Modern Vite web client. Imports domain schemas and validators directly from <code>@monorepo/shared</code>. Proxies <code>/api</code> calls to the backend.</p>
+              </div>
+
+              <div class="arch-connector">
+                <span>uses</span>
+                <div class="arrow-down">↓</div>
+              </div>
+
+              <div class="arch-box highlight-box">
+                <div class="arch-box-badge shared-badge">packages/shared</div>
+                <h4>Shared Library</h4>
+                <p>Single source of truth: TypeScript/JS interfaces, status constants, validation logic, and shared utilities. Zero duplicate code.</p>
+              </div>
+
+              <div class="arch-connector">
+                <span>uses</span>
+                <div class="arrow-up">↑</div>
+              </div>
+
+              <div class="arch-box">
+                <div class="arch-box-badge api-badge">apps/api</div>
+                <h4>Backend (Port 4000)</h4>
+                <p>Express REST service with native Node watch mode. Consumes identical validation rules from <code>@monorepo/shared</code> for request safety.</p>
+              </div>
+            </div>
+
+            <div class="code-snippet-box">
+              <div class="snippet-header">Root package.json Workspaces</div>
+              <pre class="snippet-code"><code>{
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

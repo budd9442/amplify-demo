@@ -1,0 +1,16 @@
+{
+  "name": "@monorepo/web",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3000 --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@monorepo/shared": "*"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}

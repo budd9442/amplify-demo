@@ -1,0 +1,21 @@
+{
+  "name": "simple-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simple full-stack monorepo with frontend, backend, and shared package",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"API,WEB\" -c \"magenta,cyan\" \"npm run dev -w @monorepo/api\" \"npm run dev -w @monorepo/web\"",
+    "dev:api": "npm run dev -w @monorepo/api",
+    "dev:web": "npm run dev -w @monorepo/web",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start -w @monorepo/api",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules dist apps/*/dist"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -1,34 +1,26 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-echo "=== 1. Building Web App ==="
+OUT=.amplify-hosting
+rm -rf "$OUT" && mkdir -p "$OUT/static" "$OUT/compute/default"
+
+# 1. Build frontend
+echo "=== Building Frontend ==="
 npm run build -w @monorepo/web
+cp -r apps/web/dist/. "$OUT/static/"
 
-echo "=== 2. Creating .amplify-hosting structure ==="
-rm -rf .amplify-hosting
-mkdir -p .amplify-hosting/static
-mkdir -p .amplify-hosting/compute/default
+# 2. Bundle backend into a single lean ESM file with esbuild
+echo "=== Bundling Backend with esbuild ==="
+npx esbuild apps/api/src/server.js \
+  --bundle --platform=node --target=node22 --format=esm \
+  --minify --sourcemap \
+  --banner:js="import{createRequire}from'module';const require=createRequire(import.meta.url);" \
+  --outfile="$OUT/compute/default/index.mjs"
 
-echo "=== 3. Copying static frontend assets ==="
-cp -r apps/web/dist/* .amplify-hosting/static/
+echo '{"type":"module"}' > "$OUT/compute/default/package.json"
 
-echo "=== 4. Copying backend and workspace packages ==="
-cp -r apps .amplify-hosting/compute/default/
-cp -r packages .amplify-hosting/compute/default/
-cp package.json package-lock.json .amplify-hosting/compute/default/
+# 3. Copy manifest
+cp deploy-manifest.json "$OUT/deploy-manifest.json"
 
-echo "=== 4b. Creating entrypoint for compute ==="
-cat << 'EOF' > .amplify-hosting/compute/default/index.js
-import './apps/api/src/server.js';
-EOF
-
-echo "=== 5. Installing production dependencies for compute ==="
-cd .amplify-hosting/compute/default
-npm ci --omit=dev
-cd ../../..
-
-echo "=== 6. Copying deploy-manifest.json ==="
-cp deploy-manifest.json .amplify-hosting/deploy-manifest.json
-
-echo "=== Build Complete: .amplify-hosting ready ==="
-ls -la .amplify-hosting
+echo "=== Build Complete: Artifact sizes ==="
+du -sh "$OUT"/*

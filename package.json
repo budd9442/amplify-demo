@@ -12,6 +12,7 @@
     "dev:api": "npm run dev -w @monorepo/api",
     "dev:web": "npm run dev -w @monorepo/web",
     "build": "npm run build --workspaces --if-present",
+    "build:amplify": "bash scripts/build-amplify.sh",
     "start": "npm run start -w @monorepo/api",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules dist apps/*/dist"
   },

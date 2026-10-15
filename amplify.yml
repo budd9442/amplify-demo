@@ -1,21 +1,31 @@
 version: 1
-applications:
-  - appRoot: apps/web
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - cd ../..
-            - npm ci
-            - cd apps/web
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: dist
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - ../../node_modules/**/*
-          - node_modules/**/*
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        # 1. Build frontend
+        - npm run build -w @monorepo/web
+
+        # 2. Assemble .amplify-hosting directory
+        - rm -rf .amplify-hosting
+        - mkdir -p .amplify-hosting/static .amplify-hosting/compute/default
+
+        # 3. Copy static frontend
+        - cp -r apps/web/dist/* .amplify-hosting/static/
+
+        # 4. Copy backend and shared workspace for compute
+        - cp -r apps packages package.json package-lock.json .amplify-hosting/compute/default/
+        - cd .amplify-hosting/compute/default && npm ci --omit=dev && cd ../../..
+
+        # 5. Copy manifest
+        - cp deploy-manifest.json .amplify-hosting/deploy-manifest.json
+  artifacts:
+    baseDirectory: .amplify-hosting
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*

@@ -17,6 +17,11 @@ cp -r apps .amplify-hosting/compute/default/
 cp -r packages .amplify-hosting/compute/default/
 cp package.json package-lock.json .amplify-hosting/compute/default/
 
+echo "=== 4b. Creating entrypoint for compute ==="
+cat << 'EOF' > .amplify-hosting/compute/default/index.js
+import './apps/api/src/server.js';
+EOF
+
 echo "=== 5. Installing production dependencies for compute ==="
 cd .amplify-hosting/compute/default
 npm ci --omit=dev

@@ -1,43 +1,40 @@
 {
-    "version": 1,
-    "framework": {
-        "name": "express",
-        "version": "4.21.2"
+  "version": 1,
+  "framework": {
+    "name": "express",
+    "version": "4.21.2"
+  },
+  "routes": [
+    {
+      "path": "/api/*",
+      "target": {
+        "kind": "Compute",
+        "src": "default"
+      }
     },
-    "routes": [
-        {
-            "path": "/api/*",
-            "target": {
-                "kind": "Compute",
-                "src": "default"
-            }
-        },
-        {
-            "path": "/*.*",
-            "target": {
-                "kind": "Static",
-                "cacheControl": "public, max-age=31536000, immutable"
-            },
-            "fallback": {
-                "kind": "Compute",
-                "src": "default"
-            }
-        },
-        {
-            "path": "/*",
-            "target": {
-                "kind": "Static"
-            },
-            "fallback": {
-                "path": "/index.html"
-            }
-        }
-    ],
-    "computeResources": [
-        {
-            "name": "default",
-            "runtime": "nodejs20.x",
-            "entrypoint": "apps/api/src/server.js"
-        }
-    ]
+    {
+      "path": "/*.*",
+      "target": {
+        "kind": "Static",
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      "fallback": {
+        "kind": "Compute",
+        "src": "default"
+      }
+    },
+    {
+      "path": "/*",
+      "target": {
+        "kind": "Static"
+      }
+    }
+  ],
+  "computeResources": [
+    {
+      "name": "default",
+      "runtime": "nodejs20.x",
+      "entrypoint": "index.js"
+    }
+  ]
 }

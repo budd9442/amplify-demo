@@ -9,7 +9,7 @@ import {
 } from '@monorepo/shared';
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 const startTime = Date.now();
 
 // Middleware
